@@ -1,0 +1,47 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ---- Virtual envs ----
+.venv/
+venv/
+env/
+
+# ---- Data & models: NEVER commit (large / licensed / supervisor-owned) ----
+data/**
+!data/README.md
+hf_dataset/
+hf_dataset*/
+*.arrow
+*.wav
+*.flac
+*.mp3
+*.pth
+*.safetensors
+*.ckpt
+checkpoints/
+outputs/
+runs/
+wandb/
+
+# ---- Generated artifacts ----
+metadata.csv
+metadata_gold.csv
+dropped.csv
+audit.csv
+flagged.csv
+quality_gates.csv
+dataset_audit_report.md
+baseline_samples/
+
+# ---- OS / editor ----
+.DS_Store
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,33 @@
+# Core
+numpy
+scipy
+soundfile
+librosa
+
+# HuggingFace stack (data + model)
+# transformers 5.x needs a recent torch (>=2.7) for the VITS model to load.
+# If the fine-tuning recipe (ylacombe/finetune-hf-vits) errors on transformers 5.x,
+# pin it down instead:  transformers>=4.44,<5
+transformers>=4.44
+datasets
+torchcodec        # audio decoding backend for `datasets` (needs ffmpeg present)
+accelerate
+
+# Evaluation
+evaluate
+jiwer             # WER/CER
+
+# Tooling / logging
+tensorboard
+pandas
+matplotlib
+tqdm
+
+# Dev
+pytest
+
+# NOTE: install torch separately to match the server, e.g.
+#   pip install "torch>=2.7"
+# The default PyPI wheel ships a CUDA runtime that runs fine on a CUDA 13 driver.
+# Do NOT pin an old CUDA index like cu124 — it can install torch 2.6 and break
+# transformers 5.x with: AttributeError module 'torch' has no attribute 'float8_e8m0fnu'
