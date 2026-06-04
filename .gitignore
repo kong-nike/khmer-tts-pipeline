@@ -45,3 +45,4 @@ baseline_samples/
 .idea/
 .vscode/
 *.swp
+apply_update*.sh

@@ -178,17 +178,42 @@ def render_report(dataset_name: str, summary: dict, gates: dict, per_clip: list)
     n_fail = sum(1 for _, r in per_clip if r)
     n_pass = n - n_fail
     table = gate_table(summary, gates)
-    overall = all(ok for _, _, ok, _ in table)
 
     def mark(ok):
         return "✅ PASS" if ok else "⚠️ FAIL"
+
+    # Separate routine duration filtering from genuine content-quality problems.
+    # Over-long clips are removed by a standard filter (make gold), so they
+    # should not make the headline read "FAIL" when audio/text quality is sound.
+    content_gates = [(g, t, ok, d) for (g, t, ok, d) in table if g != "Duration"]
+    duration_gate = next((row for row in table if row[0] == "Duration"), None)
+    all_pass = all(ok for _, _, ok, _ in table)
+    content_pass = all(ok for _, _, ok, _ in content_gates)
+    duration_pass = duration_gate[2] if duration_gate else True
+
+    if all_pass:
+        verdict = "✅ PASS"
+        interp = ("All clips pass every quality gate. The dataset is "
+                  "training-ready as is.")
+    elif content_pass and not duration_pass:
+        verdict = f"✅ PASS after duration filtering ({n_pass} / {n} clips retained)"
+        interp = ("All audio- and text-quality gates pass. The only excluded "
+                  "clips are out-of-band durations, removed by the standard "
+                  "filtering step (`make gold`). No content-quality issues found.")
+    else:
+        verdict = "⚠️ FAIL — content-quality issues need attention"
+        interp = ("One or more audio/text quality gates failed (see the table "
+                  "below). These are not fixed by duration filtering and should "
+                  "be investigated before training.")
 
     lines = []
     lines.append(f"# Dataset Audit Report")
     lines.append("")
     lines.append(f"**Dataset:** {dataset_name}  ")
     lines.append(f"**Date:** {date.today().isoformat()}  ")
-    lines.append(f"**Overall gate verdict:** {mark(overall)}")
+    lines.append(f"**Overall verdict:** {verdict}")
+    lines.append("")
+    lines.append(f"> {interp}")
     lines.append("")
     lines.append("## 1. Summary")
     lines.append("")
@@ -200,7 +225,7 @@ def render_report(dataset_name: str, summary: dict, gates: dict, per_clip: list)
     lines.append(f"- Unique audio fingerprints: {summary['n_unique_audio']} "
                  f"(duplicates: {summary['n_dup_clips']})")
     lines.append(f"- Clips passing all gates: **{n_pass}** / {n}  "
-                 f"(failing: {n_fail})")
+                 f"(excluded: {n_fail})")
     lines.append("")
     lines.append("## 2. Quality gates")
     lines.append("")

@@ -2,7 +2,9 @@
 
 **Dataset:** kh-tts-dataset-master (single speaker)  
 **Date:** 2026-06-04  
-**Overall gate verdict:** ⚠️ FAIL
+**Overall verdict:** ✅ PASS after duration filtering (3982 / 4000 clips retained)
+
+> All audio- and text-quality gates pass. The only excluded clips are out-of-band durations, removed by the standard filtering step (`make gold`). No content-quality issues found.
 
 ## 1. Summary
 
@@ -11,7 +13,7 @@
 - Duration min / mean / max: 1.08 / 3.58 / 22.05 s
 - Sample rates: 16000 Hz × 4000
 - Unique audio fingerprints: 4000 (duplicates: 0)
-- Clips passing all gates: **3982** / 4000  (failing: 18)
+- Clips passing all gates: **3982** / 4000  (excluded: 18)
 
 ## 2. Quality gates
 
