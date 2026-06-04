@@ -26,6 +26,8 @@ khmer-tts-pipeline/
 │   ├── text_utils.py         #   shared Khmer text helpers (NFC, char checks)
 │   ├── build_manifest.py     #   pair wavs + transcripts -> metadata.csv
 │   ├── audit_dataset.py      #   pre-training quality report
+│   ├── quality_gates.py      #   PASS/FAIL gates + Dataset Audit Report (markdown)
+│   ├── clean_manifest.py     #   filter to a clean "Gold Standard" set
 │   ├── make_hf_dataset.py    #   build a HuggingFace dataset (train/eval)
 │   └── baseline_synthesize.py#   zero-shot reference with stock mms-tts-khm
 ├── scripts/setup_env.sh      # one-time, no-sudo environment setup
@@ -47,10 +49,12 @@ source .venv/bin/activate
 # 2. put the dataset under data/ (see data/README.md for the layout)
 
 # 3. run the prep pipeline
-make manifest    # data/.../wav16 + data/.../text  ->  metadata.csv
-make audit       # quality report: audit.csv + flagged.csv
-make dataset     # HuggingFace dataset -> hf_dataset/
-make baseline    # zero-shot samples with stock mms-tts-khm
+make manifest      # data/.../wav16 + data/.../text  ->  metadata.csv
+make audit         # quality report: audit.csv + flagged.csv
+make report        # PASS/FAIL quality gates -> dataset_audit_report.md
+make gold          # filter long/bad clips -> metadata_gold.csv + dropped.csv
+make dataset-gold  # HuggingFace dataset from the clean set -> hf_dataset_gold/
+make baseline      # zero-shot samples with stock mms-tts-khm
 
 # run tests
 make test

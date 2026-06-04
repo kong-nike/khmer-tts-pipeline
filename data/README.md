@@ -11,15 +11,16 @@ data/
     text/    kh_atr_m001_a0001.txt ...   # one transcript per clip, same basename
 ```
 
-Corpus summary (single speaker, fill in after running the audit):
+Corpus summary (single speaker, from `make audit` on the real data):
 
 | Field            | Value            |
 |------------------|------------------|
 | Speaker          | kh_atr_m001      |
-| Clips            | ~4000            |
-| Total duration   | _run `make audit`_ |
+| Clips            | 4000             |
+| Total duration   | 3.98 hours       |
 | Sample rate      | 16 kHz mono      |
 | Language         | Khmer (khm)      |
+| Clips dropped    | 18 (too long)    |
 
 > Confirm usage rights with the supervisor before publishing any model trained
 > on this data (see licensing note in the main README).

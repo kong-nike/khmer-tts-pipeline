@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 from collections import Counter
 from pathlib import Path
 
@@ -62,6 +63,16 @@ def audit(manifest: Path, audio_dir: Path, audit_out: Path, flag_out: Path,
             rec["peak"] = round(peak, 4)
             rec["silent"] = peak < 1e-3
             rec["clipped"] = peak >= 0.999
+            # fraction of samples at/near full scale (a clip with a few clipped
+            # samples is fine; one that is mostly clipped is distorted)
+            if audio.size:
+                rec["clip_ratio"] = round(float(np.mean(np.abs(audio) >= 0.99)), 5)
+            else:
+                rec["clip_ratio"] = 0.0
+            # content hash for duplicate detection (hash the raw samples, not the
+            # file, so two files with identical audio collide regardless of header)
+            rec["audio_sha1"] = hashlib.sha1(
+                np.ascontiguousarray(audio)).hexdigest()[:16] if audio.size else ""
             rec["chars_per_sec"] = round(len(text) / dur, 1) if dur > 0 else 0
 
             reasons = []
@@ -85,8 +96,9 @@ def audit(manifest: Path, audio_dir: Path, audit_out: Path, flag_out: Path,
         char_counter.update(text)
         rows.append(rec)
 
-    fields = ["file", "duration", "samplerate", "channels", "peak",
-              "silent", "clipped", "text_len", "n_words", "chars_per_sec", "flags"]
+    fields = ["file", "duration", "samplerate", "channels", "peak", "clip_ratio",
+              "audio_sha1", "silent", "clipped", "text_len", "n_words",
+              "chars_per_sec", "flags"]
     for out, data in ((audit_out, rows), (flag_out, flagged)):
         with open(out, "w", encoding="utf-8", newline="") as f:
             w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore", lineterminator="\n")
